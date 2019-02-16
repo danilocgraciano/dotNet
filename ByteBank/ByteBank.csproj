@@ -44,7 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BonusManagement.cs" />
+    <Compile Include="Account.cs" />
     <Compile Include="CommercialPartner.cs" />
+    <Compile Include="Customers\Customer.cs" />
     <Compile Include="Employees\AccountManager.cs" />
     <Compile Include="Employees\AuthenticableEmployee.cs" />
     <Compile Include="Employees\Auxiliary.cs" />
@@ -52,6 +54,9 @@
     <Compile Include="Employees\Developer.cs" />
     <Compile Include="Employees\Director.cs" />
     <Compile Include="Employees\Employee.cs" />
+    <Compile Include="Exceptions\FinancialOperationException.cs" />
+    <Compile Include="Exceptions\InsufficientFundsException.cs" />
+    <Compile Include="MyFileReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Systems\IAuthenticable.cs" />

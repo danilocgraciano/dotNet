@@ -10,9 +10,18 @@ namespace ByteBank
         {
             Program program = new Program();
 
-            program.CalculateBonification();
+            //program.CalculateBonification();
 
-            program.Authenticate();
+            //program.Authenticate();
+
+            //program.HandleExceptions();
+
+            //program.CreateAccounts();
+
+            using (MyFileReader fileReader = new MyFileReader("teste.txt"))
+            {
+                fileReader.ReadNextLine();
+            }
 
             Console.ReadLine();
         }
@@ -62,5 +71,37 @@ namespace ByteBank
 
             Console.WriteLine("Monthly bonification is " + bonusManagement.GetTotalBouns());
         }
+
+        public void HandleExceptions()
+        {
+            try
+            {
+                Divide(10, 0);
+            }
+            catch (DivideByZeroException ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+            }
+            
+        }
+
+        public int Divide(int number, int divisor)
+        {
+                return number / divisor;
+        }
+
+        public void CreateAccounts()
+        {
+            try
+            {
+                Account account = new Account(1, 0);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
+        }
+        
     }
 }
