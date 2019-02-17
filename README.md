@@ -3,6 +3,6 @@
 ### ByteBank
 - Overriding
 - Inheritance
-- Methods and Classes Abstract
+- Methods and Abstract Classes
 - Interfaces
 - Exception handling
