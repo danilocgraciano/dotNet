@@ -15,7 +15,7 @@
             Salary = salary;
         }
 
-        public abstract double GetBonus();
+        protected internal abstract double GetBonus();
 
         public abstract void IncreasySalary();
     }

@@ -3,6 +3,9 @@ using System;
 
 namespace ByteBank.Models
 {
+    /// <summary>
+    /// Represents a Bank Account from ByteBank
+    /// </summary>
     public class Account
     {
         public static double OperationTax { get; set; }
@@ -20,6 +23,12 @@ namespace ByteBank.Models
 
         public double Balance { get; private set;  }
 
+        /// <summary>
+        /// Create an instance from <see cref="Account"/>.
+        /// </summary>
+        /// <param name="agency">Define a value for <paramref name="agency"/>, must be greather than zero.</param>
+        /// <param name="number">Define a value for <paramref name="number"/>, must be greather than zero.</param>
+        /// <exception cref="ArgumentException"><paramref name="agency"/> or <paramref name="number"/> is equals or smaller than zero.</exception>
         public Account(int agency, int number)
         {
 
@@ -40,16 +49,21 @@ namespace ByteBank.Models
 
             
         }
-
+        /// <summary>
+        /// Cash out a value from an account.
+        /// </summary>
+        /// <param name="value">The value to be cashed out, must be greather than zero.</param>
+        /// <exception cref="ArgumentException"> <paramref name="value"/> is smaller than zero.</exception>
+        /// <exception cref="InsufficientFundsException"><paramref name="value"/> is bigger than <see cref="Balance"/>.</exception>
         public void CashOut(double value)
         {
             if (value < 0)
                 throw new ArgumentException("The value must be greather than zero.");
 
-            if (value < Balance)
+            if (value > Balance)
             {
                 QtyCashOperationsNotAllowed++;
-                throw new InsufficientFundsException("The value is smaller than balance.", value);
+                throw new InsufficientFundsException("The value is bigger than balance.", value);
             }
 
             Balance -= value;

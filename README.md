@@ -6,3 +6,7 @@
 - Methods and Abstract Classes
 - Interfaces
 - Exception handling
+- Access Modifiers
+    - public, private, protected, internal, protected internal, abstract
+- DLLs
+- NuGet
