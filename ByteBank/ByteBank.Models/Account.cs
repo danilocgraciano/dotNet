@@ -28,7 +28,7 @@ namespace ByteBank.Models
         /// </summary>
         /// <param name="agency">Define a value for <paramref name="agency"/>, must be greather than zero.</param>
         /// <param name="number">Define a value for <paramref name="number"/>, must be greather than zero.</param>
-        /// <exception cref="ArgumentException"><paramref name="agency"/> or <paramref name="number"/> is equals or smaller than zero.</exception>
+        /// <exception cref="ArgumentException"><paramref name="agency"/> or <paramref name="number"/> are equals or smaller than zero.</exception>
         public Account(int agency, int number)
         {
 
@@ -70,12 +70,17 @@ namespace ByteBank.Models
 
         }
 
-        public void Deposit(double value)
+        public void Deposit(params double[] values)
         {
-            if (value < 0)
-                throw new ArgumentException("The value must be greather than zero.");
 
-            Balance += value;
+            foreach (double value in values)
+            {
+                if (value < 0)
+                    throw new ArgumentException($"The value must be greather than zero: {value}.");
+
+                Balance += value;
+            }
+            
         }
 
         public void TransferTo(Account account, double value)
@@ -90,6 +95,20 @@ namespace ByteBank.Models
                 throw new FinancialOperationException("Operation not allowed", ex);
             }
             account.Deposit(value);
+        }
+
+        public override bool Equals(object obj)
+        {
+            Account a = obj as Account;
+            return a != null && a.Number == Number && a.Agency == Agency;
+        }
+
+        public override int GetHashCode()
+        {
+            var hashCode = -49849310;
+            hashCode = hashCode * -1521134295 + Number.GetHashCode();
+            hashCode = hashCode * -1521134295 + Agency.GetHashCode();
+            return hashCode;
         }
     }
 }
