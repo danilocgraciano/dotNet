@@ -1,5 +1,4 @@
-﻿using ByteBank.Agency.Extensions;
-using ByteBank.Models;
+﻿using ByteBank.Models;
 using Humanizer;
 using System;
 using System.Collections.Generic;
