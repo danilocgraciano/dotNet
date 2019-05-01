@@ -1,4 +1,5 @@
-﻿using ByteBank.Models;
+﻿using ByteBank.Agency.Extensions;
+using ByteBank.Models;
 using Humanizer;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,27 @@ namespace ByteBank.Agency
     {
         static void Main(string[] args)
         {
+            testExtensionList();
+            Console.ReadLine();
+            
+        }
 
-            DateTime dueDate = new DateTime(2018, 8, 17);
-            DateTime today = DateTime.Now;
+        static void testExtensionList()
+        {
+            var myList = new List<int>();
+            myList.Add(1);
+            myList.Add(2);
+            myList.Add(3);
+            myList.AddAll(1,2,3);
+
+            foreach (int value in myList)
+                Console.WriteLine(value);
+        }
+
+        static void testDates()
+        {
+            var dueDate = new DateTime(2018, 8, 17);
+            var today = DateTime.Now;
 
             TimeSpan diff = dueDate - today;
 

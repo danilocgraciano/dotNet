@@ -10,3 +10,4 @@
     - public, private, protected, internal, protected internal, abstract
 - DLLs and Documentation
 - NuGet
+- Extension Methods
