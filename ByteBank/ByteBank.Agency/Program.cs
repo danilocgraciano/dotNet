@@ -1,10 +1,8 @@
-﻿using ByteBank.Models;
-using Humanizer;
+﻿using Humanizer;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ByteBank.Agency
 {
@@ -12,9 +10,25 @@ namespace ByteBank.Agency
     {
         static void Main(string[] args)
         {
-            testExtensionList();
+            readFile();
             Console.ReadLine();
             
+        }
+
+        static void readFile() {
+
+            var file = "../../contas.txt";
+
+            using (var stream = new FileStream(file, FileMode.Open)) {
+                var buffer = new byte[1024];
+
+                while (stream.Read(buffer, 0, 1024) != 0)
+                {
+                    var encoding = Encoding.UTF8;
+                    Console.Write(encoding.GetString(buffer));
+                }
+            }
+
         }
 
         static void testExtensionList()
