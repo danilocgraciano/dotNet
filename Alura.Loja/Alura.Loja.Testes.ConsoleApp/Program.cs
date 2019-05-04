@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Alura.Loja.Testes.ConsoleApp
@@ -12,10 +14,68 @@ namespace Alura.Loja.Testes.ConsoleApp
             //ListarUsandoEntityFramework();
             //RemoverUsandoEntityFramework();
             //ListarUsandoEntityFramework();
-            AtualizarUsandoEntityFramework();
+            //AtualizarUsandoEntityFramework();
+
+            TestandoEstadosDeObjetos();
 
             Console.WriteLine("Pressione qualquer tecla para continuar. . .");
             Console.ReadLine();
+        }
+
+        private static void TestandoEstadosDeObjetos()
+        {
+
+            using (var context = new LojaContext())
+            {
+
+                //FOR BATCH OPERATIONS
+                //context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+                var produtos = context.Produtos.ToList();
+                foreach (var p in produtos)
+                {
+                    Console.WriteLine(p);
+                }
+
+                ListEntitiesState(context.ChangeTracker.Entries());
+
+                //var produto = context.Produtos.FirstOrDefault();
+                //produto.Nome = produto.Nome + " - Editado";
+
+                //ListEntitiesState(context.ChangeTracker.Entries());
+
+                var novoProduto = new Produto()
+                {
+                    Nome = "Produto Teste",
+                    Categoria = "Teste",
+                    Preco = 1.99
+                };
+
+                context.Produtos.Add(novoProduto);
+                ListEntitiesState(context.ChangeTracker.Entries());
+                context.Produtos.Remove(novoProduto);
+                ListEntitiesState(context.ChangeTracker.Entries());
+
+                var entry = context.Entry(novoProduto);
+
+                Console.WriteLine("########################################");
+                Console.WriteLine($"{entry.Entity.ToString()} - {entry.State}");
+                Console.WriteLine("########################################");
+
+                context.SaveChanges();
+
+                ListEntitiesState(context.ChangeTracker.Entries());
+
+            }
+        }
+
+        private static void ListEntitiesState(IEnumerable<EntityEntry> Entries)
+        {
+            Console.WriteLine("============================");
+            foreach (var e in Entries)
+            {
+                Console.WriteLine($"{e.Entity.ToString()} - {e.State}");
+            }
         }
 
         private static void AtualizarUsandoEntityFramework()
