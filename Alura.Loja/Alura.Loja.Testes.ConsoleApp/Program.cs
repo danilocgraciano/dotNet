@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,70 @@ namespace Alura.Loja.Testes.ConsoleApp
             //RemoverUsandoEntityFramework();
             //ListarUsandoEntityFramework();
             //AtualizarUsandoEntityFramework();
+            //TestandoEstadosDeObjetos();
 
-            TestandoEstadosDeObjetos();
+            //RealizaCompra();
+
+            CriaPromocao();
 
             Console.WriteLine("Pressione qualquer tecla para continuar. . .");
             Console.ReadLine();
+        }
+
+        private static void CriaPromocao()
+        {
+            var promocao = new Promocao();
+            promocao.Descricao = "Promoção de Páscoa";
+            promocao.DataInicio = DateTime.Now;
+            promocao.DataTermino = DateTime.Now.AddMonths(3);
+
+            var p1 = new Produto()
+            {
+                Nome = "Caixa de Bombom",
+                Categoria = "Doces",
+                PrecoUnitario = 8.9,
+                Unidade = "CX"
+            };
+
+            var p2 = new Produto()
+            {
+                Nome = "Sonho de Valsa",
+                Categoria = "Doces",
+                PrecoUnitario = 1.0,
+                Unidade = "UN"
+            };
+
+            promocao.AddProduto(p1, p2);
+
+            using (var context = new LojaContext())
+            {
+                context.Promocoes.Add(promocao);
+                context.SaveChanges();
+            }
+        }
+
+        private static void RealizaCompra()
+        {
+            var produto = new Produto()
+            {
+                Nome = "Pão Francês",
+                Unidade = "KG",
+                PrecoUnitario = 9.98,
+                Categoria = "Padaria"
+            };
+
+            var compra = new Compra()
+            {
+                Produto = produto,
+                Qtde = 0.4,
+                Preco = 3.99
+            };
+
+            using (var context = new LojaContext())
+            {
+                context.Compras.Add(compra);
+                context.SaveChanges();
+            }
         }
 
         private static void TestandoEstadosDeObjetos()
@@ -30,6 +90,9 @@ namespace Alura.Loja.Testes.ConsoleApp
 
                 //FOR BATCH OPERATIONS
                 //context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+                //FOR UPDATE DATABASE MANUALLY
+                //context.Database.Migrate();
 
                 var produtos = context.Produtos.ToList();
                 foreach (var p in produtos)
@@ -48,7 +111,7 @@ namespace Alura.Loja.Testes.ConsoleApp
                 {
                     Nome = "Produto Teste",
                     Categoria = "Teste",
-                    Preco = 1.99
+                    PrecoUnitario = 1.99
                 };
 
                 context.Produtos.Add(novoProduto);
@@ -112,7 +175,7 @@ namespace Alura.Loja.Testes.ConsoleApp
                 Console.WriteLine($"{produtos.Count} produto(s) foram encontrados.");
                 foreach (var produto in produtos)
                 {
-                    Console.WriteLine($"{produto.Id} | {produto.Nome} | {produto.Categoria} | {produto.Preco}");
+                    Console.WriteLine($"{produto.Id} | {produto.Nome} | {produto.Categoria} | {produto.PrecoUnitario}");
                 }
             }
         }
@@ -122,7 +185,7 @@ namespace Alura.Loja.Testes.ConsoleApp
             Produto p = new Produto();
             p.Nome = "Harry Potter e a Ordem da Fênix";
             p.Categoria = "Livros";
-            p.Preco = 19.89;
+            p.PrecoUnitario = 19.89;
 
             using (var context = new ProdutoDAOEntity())
             {
@@ -135,7 +198,7 @@ namespace Alura.Loja.Testes.ConsoleApp
             Produto p = new Produto();
             p.Nome = "Harry Potter e a Ordem da Fênix";
             p.Categoria = "Livros";
-            p.Preco = 19.89;
+            p.PrecoUnitario = 19.89;
 
             using (var repo = new ProdutoDAO())
             {
