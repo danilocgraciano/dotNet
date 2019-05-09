@@ -30,8 +30,8 @@ namespace Alura.Loja.Testes.ConsoleApp
         {
             var promocao = new Promocao();
             promocao.Descricao = "Promoção de Páscoa";
-            promocao.DataInicio = DateTime.Now;
-            promocao.DataTermino = DateTime.Now.AddMonths(3);
+            promocao.DataInicio = DateTime.Now.Date;
+            promocao.DataTermino = DateTime.Now.Date.AddMonths(3);
 
             var p1 = new Produto()
             {
@@ -41,15 +41,7 @@ namespace Alura.Loja.Testes.ConsoleApp
                 Unidade = "CX"
             };
 
-            var p2 = new Produto()
-            {
-                Nome = "Sonho de Valsa",
-                Categoria = "Doces",
-                PrecoUnitario = 1.0,
-                Unidade = "UN"
-            };
-
-            promocao.AddProduto(p1, p2);
+            promocao.AddProduto(p1);
 
             using (var context = new LojaContext())
             {
