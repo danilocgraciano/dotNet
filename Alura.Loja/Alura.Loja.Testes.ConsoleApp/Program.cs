@@ -22,10 +22,103 @@ namespace Alura.Loja.Testes.ConsoleApp
 
             //CriaPromocao();
 
-            CriaCliente();
+            //CriaCliente();
+
+            //ListarProdutosDaPromocao();
+
+            //ListarCliente();
+
+            ListarComprasDeUmProduto();
 
             Console.WriteLine("Pressione qualquer tecla para continuar. . .");
             Console.ReadLine();
+        }
+
+        private static void ListarComprasDeUmProduto()
+        {
+            using (var context = new LojaContext())
+            {
+                //BUSCA AS COMPRAS DE UM PRODUTO EM APENAS 1 PASSO
+                //var comprasDeUmProduto = context.
+                //    Compras
+                //    .Include(c => c.Produto)
+                //    .Where(c => c.Produto.Id == 3002)
+                //    .ToList();
+
+                //BUSCA AS COMPRAS DE UM PRODUTO EM APENAS 2 PASSOS
+                //BUSCA UM PRODUTO NO BANCO DE DADOS
+                var produto = context.Produtos.Where(p => p.Id == 3002).FirstOrDefault();
+
+                context.Entry(produto)
+                    .Collection(p => p.Compras)
+                    .Query()
+                    .Where(c => c.Preco > 1)
+                    .Load();
+
+                foreach (var item in produto.Compras)
+                {
+                    Console.WriteLine($"{item.Produto.Nome}, {item.Preco}");
+                }
+            }
+        }
+
+        private static void ListarCliente()
+        {
+
+            using (var context = new LojaContext())
+            {
+                var cliente = context.Clientes
+                    .Include(c => c.EnderecoDeEntrega)
+                    .FirstOrDefault();
+
+                Console.WriteLine($"Endereco de Entrega: {cliente?.EnderecoDeEntrega}");
+            }
+        }
+
+        private static void ListarProdutosDaPromocao()
+        {
+            //CRIA PRMOCAO PARA TESTE
+            //using (var context = new LojaContext())
+            //{
+            //    Promocao promocao = new Promocao();
+            //    promocao.Descricao = "Queima Total";
+            //    promocao.DataInicio = new DateTime(2019, 01, 01);
+            //    promocao.DataTermino = new DateTime(2019, 01, 31);
+
+            //    var listProdutos = context.Produtos
+            //        .Where(p => p.Categoria == "Bebidas")
+            //        .ToList();
+
+            //    foreach (var produto in listProdutos)
+            //    {
+            //        promocao.AddProduto(produto);
+            //    }
+
+            //    context.SaveChanges();
+                
+            //}
+
+            //LISTAR PRODUTOS DA PROMOCAO
+            using (var context = new LojaContext())
+            {
+
+                //SELECT * FROM PROMOCAO
+                //LEFT JOIN PROMOCAO_PRODUTO ON PROMOCAO_PRODUTO.PROMOCAO_ID = PROMOCAO.ID
+                //LEFT JOIN PRODUTO ON PROMOCAO_PRODUTO.PRODUTO_ID = PRODUTO.ID
+
+                var promocao = context.Promocoes.
+                    Include(promo => promo.Produtos)
+                    .ThenInclude(promoProd => promoProd.Produto)
+                    .FirstOrDefault();
+
+                Console.WriteLine(promocao.Descricao);
+                Console.WriteLine("Listando produtos da promoção");
+
+                foreach (var produto in promocao.Produtos)
+                {
+                    Console.WriteLine(produto.Produto);
+                }
+            }
         }
 
         private static void CriaCliente()
