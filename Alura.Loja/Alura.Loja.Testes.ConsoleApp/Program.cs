@@ -20,10 +20,31 @@ namespace Alura.Loja.Testes.ConsoleApp
 
             //RealizaCompra();
 
-            CriaPromocao();
+            //CriaPromocao();
+
+            CriaCliente();
 
             Console.WriteLine("Pressione qualquer tecla para continuar. . .");
             Console.ReadLine();
+        }
+
+        private static void CriaCliente()
+        {
+            var cliente = new Cliente();
+            cliente.Nome = "Cliente da Silva";
+            cliente.EnderecoDeEntrega = new Endereco()
+            {
+                    Numero = 12,
+                    Logradouro = "Rua do Endereço",
+                    Complemento = "Casa",
+                    Bairro = "Centro"
+            };
+
+            using (var context = new LojaContext())
+            {
+                context.Clientes.Add(cliente);
+            }
+
         }
 
         private static void CriaPromocao()
