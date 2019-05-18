@@ -1,0 +1,14 @@
+﻿<!DOCTYPE html>
+
+<html lang="pt-br" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Listagem de Livros</title>
+</head>
+<body>
+        @foreach(var livro in ViewBag.Livros)
+        {
+            <li>@livro.Titulo - @livro.Autor</li>
+        }
+</body>
+</html>

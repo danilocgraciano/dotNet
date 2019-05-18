@@ -1,5 +1,8 @@
 ## Studies about .NET
 
+- Entity Framework
+- MVC
+
 ### ByteBank
 - Overriding
 - Inheritance
