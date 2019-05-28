@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,18 +13,21 @@ namespace Tracker.Controllers
     [Route("api/[controller]")]
     public class BoardsController : ControllerBase
     {
-        private IBoardRepository repository;
+        private IBoardRepository _repository;
+        private ILogger<BoardsController> _logger;
 
-        public BoardsController(IBoardRepository repository)
+        public BoardsController(IBoardRepository repository, ILogger<BoardsController> logger)
         {
-            this.repository = repository;
+            _repository = repository;
+            _logger = logger;
         }
 
         // GET api/boards
         [HttpGet]
         public ActionResult<IEnumerable<Board>> All(int? page)
         {
-            var data = repository.FindAll();
+            var data = _repository.FindAll();
+            _logger.LogInformation("BoardsController - All");
             return Ok(new PaginatedList<Board>(data, page ?? 0));
         }
 
@@ -31,9 +35,12 @@ namespace Tracker.Controllers
         [HttpGet("{id}")]
         public ActionResult<Board> One(string id)
         {
-            var board = repository.FindByCondition(e => e.Id == id).FirstOrDefault();
+            var board = _repository.FindByCondition(e => e.Id == id).FirstOrDefault();
             if (board == null)
+            {
+                _logger.LogInformation($"Board for id {id} does not exists!");
                 return NotFound();
+            }
             return Ok(board);
         }
 
@@ -41,9 +48,15 @@ namespace Tracker.Controllers
         [HttpPost]
         public ActionResult Save([FromBody] Board board)
         {
+            if (board == null)
+            {
+                _logger.LogError("Request Object was NULL");
+                return BadRequest();
+            }
+
             board.Id = Guid.NewGuid().ToString();
-            repository.Create(board);
-            repository.Save();
+            _repository.Create(board);
+            _repository.Save();
 
             return CreatedAtAction(nameof(One), new { id = board.Id }, board);
         }
@@ -52,15 +65,24 @@ namespace Tracker.Controllers
         [HttpPut("{id}")]
         public ActionResult Update(string id, [FromBody] Board board)
         {
-            var aBoard = repository.FindByCondition(e => e.Id == id).FirstOrDefault();
+            if (board == null)
+            {
+                _logger.LogError("Request Object was NULL");
+                return BadRequest();
+            }
+
+            var aBoard = _repository.FindByCondition(e => e.Id == id).FirstOrDefault();
             if (aBoard == null)
+            {
+                _logger.LogInformation($"Board for id {id} does not exists!");
                 return NotFound();
+            }
 
             aBoard.Title = board.Title;
             aBoard.Cards = board.Cards;
 
-            repository.Update(aBoard);
-            repository.Save();
+            _repository.Update(aBoard);
+            _repository.Save();
 
             return NoContent();
 
@@ -70,12 +92,17 @@ namespace Tracker.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete(string id)
         {
-            var board = repository.FindByCondition(e => e.Id == id).FirstOrDefault();
-            if (board == null)
-                return NotFound();
+            _logger.LogInformation("BoardsController - Delete");
 
-            repository.Delete(board);
-            repository.Save();
+            var board = _repository.FindByCondition(e => e.Id == id).FirstOrDefault();
+            if (board == null)
+            {
+                _logger.LogInformation($"Board for id {id} does not exists!");
+                return NotFound();
+            }
+
+            _repository.Delete(board);
+            _repository.Save();
 
             return NoContent();
         }

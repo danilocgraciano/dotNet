@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Tracker.Contracts;
 using Tracker.Models;
 using Tracker.Shared;
@@ -12,18 +13,21 @@ namespace Tracker.Controllers
     [Route("api/[controller]")]
     public class CardsController : ControllerBase
     {
-        private ICardRepository repository;
+        private ICardRepository _repository;
+        private ILogger<CardsController> _logger;
 
-        public CardsController(ICardRepository repository)
+        public CardsController(ICardRepository repository, ILogger<CardsController> logger)
         {
-            this.repository = repository;
+            _repository = repository;
+            _logger = logger;
         }
 
         // GET api/cards
         [HttpGet]
         public ActionResult<IEnumerable<Card>> All(int? page)
         {
-            var data = repository.FindAll();
+            var data = _repository.FindAll();
+            _logger.LogInformation("CardsController - All");
             return Ok(new PaginatedList<Card>(data, page ?? 0));
         }
 
@@ -31,9 +35,12 @@ namespace Tracker.Controllers
         [HttpGet("{id}")]
         public ActionResult<Card> One(string id)
         {
-            var card = repository.FindByCondition(e => e.Id == id).FirstOrDefault();
+            var card = _repository.FindByCondition(e => e.Id == id).FirstOrDefault();
             if (card == null)
+            {
+                _logger.LogInformation($"Card for id {id} does not exists!");
                 return NotFound();
+            }
             return Ok(card);
         }
 
@@ -41,9 +48,16 @@ namespace Tracker.Controllers
         [HttpPost]
         public ActionResult Save([FromBody] Card card)
         {
+
+            if (card == null)
+            {
+                _logger.LogError("Request Object was NULL");
+                return BadRequest();
+            }
+
             card.Id = Guid.NewGuid().ToString();
-            repository.Create(card);
-            repository.Save();
+            _repository.Create(card);
+            _repository.Save();
 
             return CreatedAtAction(nameof(One), new { id = card.Id }, card);
         }
@@ -52,16 +66,25 @@ namespace Tracker.Controllers
         [HttpPut("{id}")]
         public ActionResult Update(string id, [FromBody] Card card)
         {
-            var aCard = repository.FindByCondition(e => e.Id == id).FirstOrDefault();
             if (card == null)
+            {
+                _logger.LogError("Request Object was NULL");
+                return BadRequest();
+            }
+
+            var aCard = _repository.FindByCondition(e => e.Id == id).FirstOrDefault();
+            if (card == null)
+            {
+                _logger.LogInformation($"Card for id {id} does not exists!");
                 return NotFound();
+            }
 
             aCard.Title = card.Title;
             aCard.Description = card.Description;
             aCard.Board = card.Board;
 
-            repository.Update(aCard);
-            repository.Save();
+            _repository.Update(aCard);
+            _repository.Save();
 
             return NoContent();
 
@@ -71,12 +94,15 @@ namespace Tracker.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete(string id)
         {
-            var card = repository.FindByCondition(e => e.Id == id).FirstOrDefault();
+            var card = _repository.FindByCondition(e => e.Id == id).FirstOrDefault();
             if (card == null)
+            {
+                _logger.LogInformation($"Card for id {id} does not exists!");
                 return NotFound();
+            }
 
-            repository.Delete(card);
-            repository.Save();
+            _repository.Delete(card);
+            _repository.Save();
 
             return NoContent();
         }
